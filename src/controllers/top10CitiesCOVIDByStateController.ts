@@ -3,11 +3,13 @@ import { MissingParamError } from '../handleErrors/errors/missingParamError';
 import { badRequest, ok, serverError } from '../handleErrors/httpHelder';
 import { Controller } from '../protocols/controller';
 import { HttpRequest, HttpResponse } from '../protocols/http';
+import sendTop10CitiesService from '../services/sendTop10CitiesService';
 import top10CitiesCOVIDByStateService from '../services/top10CitiesCOVIDByStateService';
 
 class top10CitiesCOVIDByStateController implements Controller {
     constructor(
         private readonly top10CitiesCOVIDByStateServie: top10CitiesCOVIDByStateService,
+        private readonly sendTop10CitiesServie: sendTop10CitiesService,
     ) {}
 
     async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
@@ -86,6 +88,8 @@ class top10CitiesCOVIDByStateController implements Controller {
                     dateStart,
                     dateEnd,
                 });
+
+            await this.sendTop10CitiesServie.execute(top10Cities);
 
             return ok(top10Cities);
         } catch (err) {
