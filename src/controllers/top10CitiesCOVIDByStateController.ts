@@ -1,3 +1,4 @@
+import { InvalidParamError } from '../handleErrors/errors/InvalidParamError';
 import { MissingParamError } from '../handleErrors/errors/missingParamError';
 import { badRequest, ok, serverError } from '../handleErrors/httpHelder';
 import { Controller } from '../protocols/controller';
@@ -11,7 +12,8 @@ class top10CitiesCOVIDByStateController implements Controller {
 
     async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
         try {
-            const { state, dateStart, dateEnd } = httpRequest.query;
+            const { state } = httpRequest.query;
+            let { dateStart, dateEnd } = httpRequest.query;
 
             if (!state) {
                 return badRequest(new MissingParamError('state'));
@@ -25,7 +27,58 @@ class top10CitiesCOVIDByStateController implements Controller {
                 return badRequest(new MissingParamError('dateEnd'));
             }
 
-            // verify dates
+            const validStatesArray = [
+                'AC',
+                'AL',
+                'AP',
+                'AM',
+                'BA',
+                'CE',
+                'DF',
+                'ES',
+                'GO',
+                'MA',
+                'MT',
+                'MS',
+                'MG',
+                'PA',
+                'PB',
+                'PR',
+                'PE',
+                'PI',
+                'RJ',
+                'RN',
+                'RS',
+                'RO',
+                'RR',
+                'SC',
+                'SP',
+                'SE',
+                'TO',
+            ];
+
+            if (!validStatesArray.includes(state.toUpperCase())) {
+                return badRequest(new InvalidParamError('state not valid'));
+            }
+
+            dateStart = new Date(dateStart);
+            dateEnd = new Date(dateEnd);
+
+            if (dateStart.toString() === 'Invalid Date') {
+                return badRequest(new InvalidParamError('dateStart'));
+            }
+
+            if (dateEnd.toString() === 'Invalid Date') {
+                return badRequest(new InvalidParamError('dateEnd'));
+            }
+
+            if (dateStart.getTime() > dateEnd.getTime()) {
+                return badRequest(
+                    new InvalidParamError(
+                        'dateStart cannot be greater than dateEnd',
+                    ),
+                );
+            }
 
             const top10Cities =
                 await this.top10CitiesCOVIDByStateServie.execute({
