@@ -1,3 +1,5 @@
+import { MissingParamError } from '../handleErrors/errors/missingParamError';
+import { badRequest, ok, serverError } from '../handleErrors/httpHelder';
 import { Controller } from '../protocols/controller';
 import { HttpRequest, HttpResponse } from '../protocols/http';
 import top10CitiesCOVIDByStateService from '../services/top10CitiesCOVIDByStateService';
@@ -8,17 +10,34 @@ class top10CitiesCOVIDByStateController implements Controller {
     ) {}
 
     async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
-        const { state, dateStart, dateEnd } = httpRequest.query;
+        try {
+            const { state, dateStart, dateEnd } = httpRequest.query;
 
-        // verify request
+            if (!state) {
+                return badRequest(new MissingParamError('state'));
+            }
 
-        const top10Cities = await this.top10CitiesCOVIDByStateServie.execute({
-            state,
-            dateStart,
-            dateEnd,
-        });
+            if (!dateStart) {
+                return badRequest(new MissingParamError('dateStart'));
+            }
 
-        return top10Cities;
+            if (!dateEnd) {
+                return badRequest(new MissingParamError('dateEnd'));
+            }
+
+            // verify dates
+
+            const top10Cities =
+                await this.top10CitiesCOVIDByStateServie.execute({
+                    state,
+                    dateStart,
+                    dateEnd,
+                });
+
+            return ok(top10Cities);
+        } catch (err) {
+            return serverError(err);
+        }
     }
 }
 
