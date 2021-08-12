@@ -46,13 +46,13 @@ Se os parâmetros da requisição estiverem errados será retornado um erro com 
 
 ```bash
 # Clone este repositório
-git clone https://github.com/isaac-allef/inicie-educacao-teste-tecnico.git
+$ git clone https://github.com/isaac-allef/inicie-educacao-teste-tecnico.git
 
 # Entre na pasta do projeto
 $ cd inicie-educacao-teste-tecnico
 
 # Instale as dependências
-yarn install
+$ yarn install
 ```
 
 # :runner: Getting Started
@@ -63,11 +63,15 @@ Crie o arquivo ```.env``` na raiz do projeto e siga o arquivo de exemplo ```.env
 
 Então rode o seguinte comando para iniciar esta API:
 
-```yarn dev:server```
+```bash
+$ yarn dev:server
+```
 
 Para rodar os testes unitários, utilize o seguinte comando:
 
-```yarn test```
+```bash
+$ yarn test
+```
 
 # :postbox: Faq
 
